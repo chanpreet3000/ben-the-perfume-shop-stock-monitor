@@ -1,82 +1,41 @@
-import os
 import random
+from urllib.parse import parse_qs, urlparse
 
 import discord
 import pytz
-import requests
+import aiohttp
 import json
-from fake_useragent import UserAgent
 from datetime import datetime
 from typing import Tuple
 from Logger import Logger
 from bs4 import BeautifulSoup
-from typing import List, Dict
-from dotenv import load_dotenv
-
 from models import ProductData, ProductOptions
+from ProxyManager import ProxyManager
 
-load_dotenv()
+WINDOWS_USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 OPR/108.0.0.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Vivaldi/6.5.3206.63'
+]
 
-
-def get_random_headers():
-    ua = UserAgent()
-
-    return {
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'accept-language': 'en-US,en;q=0.5',
-        'cache-control': 'max-age=0',
-        'if-none-match': 'W/"13575d-3DwWx3/tr8nJdLbqIxt1UGPnEpE"',
-        'priority': 'u=0, i',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'document',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-site': 'same-origin',
-        'sec-fetch-user': '?1',
-        'sec-gpc': '1',
-        'upgrade-insecure-requests': '1',
-        'user-agent': ua.random,
-    }
-
-
-def get_proxies_from_webshare() -> List[Dict[str, str]]:
-    countries: List[str] = ['US', 'GB']
-    WEBSHARE_API_TOKEN = os.getenv('WEBSHARE_API_TOKEN')
-    formatted_proxies = []
-    page = 1
-
-    while True:
-        response = requests.get(
-            f"https://proxy.webshare.io/api/v2/proxy/list/?mode=direct&page={page}&page_size=100",
-            headers={"Authorization": f"Token {WEBSHARE_API_TOKEN}"}
-        )
-
-        if response.status_code != 200:
-            raise Exception(f"API request failed with status code: {response.status_code}")
-
-        proxies_data = response.json()
-        proxies_list = proxies_data.get('results', [])
-
-        if not proxies_list:
-            break
-
-        # Filter proxies by country
-        for proxy in proxies_list:
-            if proxy.get('country_code') in countries:
-                proxy_url = f"http://{proxy['username']}:{proxy['password']}@{proxy['proxy_address']}:{proxy['port']}"
-                formatted_proxies.append({'http': proxy_url, 'https': proxy_url})
-
-        # Check if we've reached the last page
-        if not proxies_data.get('next'):
-            break
-
-        page += 1
-
-    if len(formatted_proxies) == 0:
-        raise Exception(f"No proxies available for countries: {', '.join(countries)}")
-
-    Logger.info(f"Loaded {len(formatted_proxies)} proxies from Webshare for countries: {', '.join(countries)}")
-    return formatted_proxies
+headers = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+    'accept-language': 'en-US,en;q=0.7',
+    'cache-control': 'max-age=0',
+    'if-none-match': 'W/"126857-d1r5C6RINRe9aCoeR5q37Isq5lU:dtagent10299241001084140w6IF:dtagent10299241001084140w6IF:dtagent10299241001084140w6IF"',
+    'priority': 'u=0, i',
+    'sec-ch-ua': '"Chromium";v="130", "Brave";v="130", "Not?A_Brand";v="99"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-user': '?1',
+    'sec-gpc': '1',
+    'upgrade-insecure-requests': '1',
+    'user-agent': random.choice(WINDOWS_USER_AGENTS),
+}
 
 
 def get_current_time():
@@ -119,27 +78,35 @@ def get_product_embed(product_data: ProductData) -> discord.Embed:
     return embed
 
 
-def fetch_product_data(url: str, max_retries=5) -> Tuple[discord.Embed, ProductData | None]:
-    if not url.startswith('https://www.theperfumeshop.com/'):
-        raise ValueError('Invalid URL. Must be a valid The Perfume Shop product URL')
-    proxies = get_proxies_from_webshare()
+async def fetch_product_data(url: str, max_retries=5) -> Tuple[discord.Embed, ProductData | None]:
+    if not (url.startswith('https://www.theperfumeshop.com/') and '?varSel=' in url):
+        raise ValueError(
+            "Invalid URL. Must be a valid The Perfume Shop product URL containing '?varSel='. Eg: https://www.theperfumeshop.com/marc-jacobs/perfect/eau-de-parfum-gift-set/p/267910EDPXS?varSel=1298801")
+
+    proxy_manager = ProxyManager()
+    await proxy_manager.initialize()
+
     for attempt in range(max_retries):
         try:
-            random_proxy = random.choice(proxies)
+            random_proxy = await proxy_manager.get_proxy()
             Logger.info(f'Attempt {attempt + 1}: Fetching product data from {url} using proxy {random_proxy}')
 
-            response = requests.get(
-                url,
-                headers=get_random_headers(),
-                cookies={},
-                proxies=random_proxy,
-                timeout=10,
-                verify=True
-            )
-            response.raise_for_status()
+            conn = aiohttp.TCPConnector(ssl=True)
+            async with aiohttp.ClientSession(connector=conn) as session:
+                async with session.get(
+                        url,
+                        headers=headers,
+                        cookies={},
+                        proxy=random_proxy['http'],
+                        timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
+                    if response.status != 200:
+                        raise Exception(f'HTTP error {response.status}')
+
+                    content = await response.text()
 
             # Parse the page content
-            soup = BeautifulSoup(response.content, 'html.parser')
+            soup = BeautifulSoup(content, 'html.parser')
 
             # Locate the script tag with the product data
             script_tag = soup.find(id='spartacus-app-state')
@@ -153,14 +120,10 @@ def fetch_product_data(url: str, max_retries=5) -> Tuple[discord.Embed, ProductD
             except json.JSONDecodeError:
                 raise Exception('Failed to parse product JSON data')
 
-            spec_items = soup.find_all(class_='product-add-to-cart__specifications-item')
-
             # Find the specific item containing product code
-            product_code = None
-            for item in spec_items:
-                if 'Product code:' in item.text:
-                    product_code = item.text.strip().split('Product code:')[1].strip()
-                    break
+            parsed_url = urlparse(url)
+            query_params = parse_qs(parsed_url.query)
+            product_code = query_params.get('varSel')[0] if query_params.get('varSel') else None
 
             if product_code:
                 Logger.info(f"Found product code: {product_code}")

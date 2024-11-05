@@ -22,7 +22,7 @@ async def watch_stock_cron(client: discord.Client):
                 Logger.info(f"Checking stock for product: {product_url}")
 
                 # Fetch product data and create embed
-                embed, product_data = fetch_product_data(product_url)
+                embed, product_data = await fetch_product_data(product_url)
 
                 if product_data is None:
                     Logger.warn(f"Failed to fetch product data for URL: {product_url}. Skipping...")

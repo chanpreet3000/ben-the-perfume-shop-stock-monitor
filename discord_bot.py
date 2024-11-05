@@ -1,4 +1,3 @@
-import asyncio
 import os
 
 import discord
@@ -38,7 +37,7 @@ async def add_product(interaction: discord.Interaction, url: str):
     await interaction.response.defer(thinking=True)
 
     try:
-        embed, product_data = fetch_product_data(url, max_retries=5)
+        embed, product_data = await fetch_product_data(url, max_retries=5)
         if product_data is None:
             await interaction.followup.send(
                 content="❌ Failed to fetch product data. Please make sure the URL is correct or try again."
@@ -231,7 +230,7 @@ async def check_stock(interaction: discord.Interaction, product_url: str):
     await interaction.response.defer()
 
     try:
-        embed, product = fetch_product_data(product_url, max_retries=5)
+        embed, product = await fetch_product_data(product_url, max_retries=5)
 
         if product is None:
             await interaction.followup.send(
@@ -257,7 +256,7 @@ async def check_stock(interaction: discord.Interaction, product_url: str):
 @tasks.loop(seconds=watch_product_cron_delay_seconds)
 async def watched_products_stock_cron():
     Logger.info("Starting scheduled stock check")
-    await asyncio.create_task(watch_stock_cron(client))
+    await watch_stock_cron(client)
     Logger.info(f"Scheduled stock check completed. Next run in {watch_product_cron_delay_seconds} seconds.")
 
 
