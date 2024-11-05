@@ -1,11 +1,19 @@
+import asyncio
 import os
+
 import discord
 from discord import app_commands
 from Logger import Logger
 from dotenv import load_dotenv
+from discord.ext import tasks
 from DatabaseManager import DatabaseManager
 
+from utils import fetch_product_data
+from watch_stock_cron import watch_stock_cron
+
 load_dotenv()
+
+watch_product_cron_delay_seconds = int(os.getenv('WATCH_PRODUCT_CRON_DELAY_SECONDS', 60 * 60))  # 1 hour
 
 
 class Bot(discord.Client):
@@ -30,6 +38,12 @@ async def add_product(interaction: discord.Interaction, url: str):
     await interaction.response.defer(thinking=True)
 
     try:
+        embed, product_data = fetch_product_data(url, max_retries=5)
+        if product_data is None:
+            await interaction.followup.send(
+                content="❌ Failed to fetch product data. Please make sure the URL is correct or try again."
+            )
+            return
         if client.db.add_watch_product(url):
             embed = discord.Embed(
                 title="✅ Product Added",
@@ -46,7 +60,7 @@ async def add_product(interaction: discord.Interaction, url: str):
         Logger.error(f'Error adding product: {url}', e)
         embed = discord.Embed(
             title="❌ Error",
-            description="An error occurred while adding the product.",
+            description=f"An error occurred while adding the product.\n{str(e)}",
             color=0xff0000
         )
 
@@ -54,28 +68,28 @@ async def add_product(interaction: discord.Interaction, url: str):
 
 
 @client.tree.command(name="tps-remove-product", description="Remove a product URL from watch list")
-async def remove_product(interaction: discord.Interaction, url: str):
-    Logger.info(f"Received remove product request for URL: {url}")
+async def remove_product(interaction: discord.Interaction, product_url: str):
+    Logger.info(f"Received remove product request for URL: {product_url}")
     await interaction.response.defer(thinking=True)
 
     try:
-        if client.db.remove_watch_product(url):
+        if client.db.remove_watch_product(product_url):
             embed = discord.Embed(
                 title="✅ Product Removed",
-                description=f"Stopped watching product: {url}",
+                description=f"Stopped watching product: {product_url}",
                 color=0x00ff00
             )
         else:
             embed = discord.Embed(
                 title="⚠️ Not Found",
-                description=f"This product was not being watched: {url}",
+                description=f"This product was not being watched: {product_url}",
                 color=0xffcc00
             )
     except Exception as e:
         Logger.error('Error removing product:', e)
         embed = discord.Embed(
             title="❌ Error",
-            description="An error occurred while removing the product.",
+            description=f"An error occurred while removing the product.\n{str(e)}",
             color=0xff0000
         )
 
@@ -106,7 +120,7 @@ async def list_products(interaction: discord.Interaction):
         Logger.error('Error listing products:', e)
         embed = discord.Embed(
             title="❌ Error",
-            description="An error occurred while fetching the product list.",
+            description=f"An error occurred while fetching the product list.\n{str(e)}",
             color=0xff0000
         )
 
@@ -136,7 +150,7 @@ async def add_channel(interaction: discord.Interaction, channel: discord.TextCha
         Logger.error('Error adding channel:', e)
         embed = discord.Embed(
             title="❌ Error",
-            description="An error occurred while adding the channel.",
+            description=f"An error occurred while adding the channel.\n{str(e)}",
             color=0xff0000
         )
 
@@ -166,7 +180,7 @@ async def remove_channel(interaction: discord.Interaction, channel: discord.Text
         Logger.error('Error removing channel:', e)
         embed = discord.Embed(
             title="❌ Error",
-            description="An error occurred while removing the channel.",
+            description=f"An error occurred while removing the channel.\n{str(e)}",
             color=0xff0000
         )
 
@@ -204,16 +218,53 @@ async def list_channels(interaction: discord.Interaction):
         Logger.error('Error listing channels:', e)
         embed = discord.Embed(
             title="❌ Error",
-            description="An error occurred while fetching the channel list.",
+            description=f"An error occurred while fetching the channel list.\n{str(e)}",
             color=0xff0000
         )
 
     await interaction.followup.send(embed=embed)
 
 
+@client.tree.command(name="tps-check-stock", description="Check the stock level of a product on theperfumeshop.com")
+async def check_stock(interaction: discord.Interaction, product_url: str):
+    Logger.info(f"Received check stock request {product_url}")
+    await interaction.response.defer()
+
+    try:
+        embed, product = fetch_product_data(product_url, max_retries=5)
+
+        if product is None:
+            await interaction.followup.send(
+                content="❌ Failed to fetch product data. Please make sure the URL is correct or try again."
+            )
+            return
+
+        await interaction.followup.send(
+            content="🔍 Stock Check Result Completed",
+            embed=embed
+        )
+        Logger.info(f'Finished checking stock for product {product_url}')
+    except Exception as e:
+        Logger.error('Error checking stock:', e)
+        error_embed = discord.Embed(
+            title="❌ Error",
+            description=f"An error occurred while checking the product stock.\n{str(e)}",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=error_embed)
+
+
+@tasks.loop(seconds=watch_product_cron_delay_seconds)
+async def watched_products_stock_cron():
+    Logger.info("Starting scheduled stock check")
+    await asyncio.create_task(watch_stock_cron(client))
+    Logger.info(f"Scheduled stock check completed. Next run in {watch_product_cron_delay_seconds} seconds.")
+
+
 @client.event
 async def on_ready():
     Logger.info(f"Bot is ready and logged in as {client.user}")
+    watched_products_stock_cron.start()
 
 
 def run_bot():

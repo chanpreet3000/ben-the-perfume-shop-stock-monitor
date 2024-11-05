@@ -27,10 +27,10 @@ class DatabaseManager:
 
         # Initialize database connection
         self.mongo_uri = os.getenv('MONGODB_URI')
-        if not self.mongo_uri:
+        self.db_name = os.getenv('MONGODB_DB_NAME')
+        if not self.mongo_uri or not self.db_name:
             raise ValueError("MongoDB URI not found in environment variables")
 
-        self.db_name = 'ben-the-perfume-shop-monitor'
         self.client: Optional[MongoClient] = None
         self.db: Optional[MongoDatabase] = None
 
@@ -117,7 +117,6 @@ class DatabaseManager:
         try:
             result = self.db[self.watch_products_collection].insert_one({
                 "product_url": product_url,
-                "retries": 0,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow()
             })
