@@ -1,5 +1,5 @@
 import random
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse, urlunparse
 
 import discord
 import pytz
@@ -23,7 +23,6 @@ headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
     'accept-language': 'en-US,en;q=0.7',
     'cache-control': 'max-age=0',
-    'if-none-match': 'W/"126857-d1r5C6RINRe9aCoeR5q37Isq5lU:dtagent10299241001084140w6IF:dtagent10299241001084140w6IF:dtagent10299241001084140w6IF"',
     'priority': 'u=0, i',
     'sec-ch-ua': '"Chromium";v="130", "Brave";v="130", "Not?A_Brand";v="99"',
     'sec-ch-ua-mobile': '?0',
@@ -55,7 +54,7 @@ def get_product_embed(product_data: ProductData) -> discord.Embed:
     for option in product_data.options:
         embed.add_field(
             name='Variant',
-            value=option.name,
+            value=f"[{option.name}]({option.product_url})",
             inline=True
         )
         embed.add_field(
@@ -124,6 +123,14 @@ async def fetch_product_data(url: str, max_retries=5) -> Tuple[discord.Embed, Pr
             parsed_url = urlparse(url)
             query_params = parse_qs(parsed_url.query)
             product_code = query_params.get('varSel')[0] if query_params.get('varSel') else None
+            base_url = urlunparse((
+                parsed_url.scheme,
+                parsed_url.netloc,
+                parsed_url.path,
+                '',
+                '',
+                ''
+            ))
 
             if product_code:
                 Logger.info(f"Found product code: {product_code}")
@@ -169,7 +176,8 @@ async def fetch_product_data(url: str, max_retries=5) -> Tuple[discord.Embed, Pr
                         is_in_stock=stock_status != 'outOfStock',
                         stock_status=stock_status,
                         product_code=option['code'],
-                        formatted_price=formatted_price
+                        formatted_price=formatted_price,
+                        product_url=f"{base_url}?varSel={option['code']}"
                     )
                 )
 

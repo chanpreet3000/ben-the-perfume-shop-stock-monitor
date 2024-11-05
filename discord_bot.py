@@ -43,16 +43,31 @@ async def add_product(interaction: discord.Interaction, url: str):
                 content="❌ Failed to fetch product data. Please make sure the URL is correct or try again."
             )
             return
+
+        option_to_watch = None
+        for opt in product_data.options:
+            if opt.product_code == product_data.product_code:
+                option_to_watch = opt
+                break
+
+        if option_to_watch is None:
+            await interaction.followup.send(
+                content="❌ Failed to find product option to watch. Please make sure the URL is correct or try again."
+            )
+            return
+
         if client.db.add_watch_product(url):
             embed = discord.Embed(
-                title="✅ Product Added",
-                description=f"Started watching product: {url}",
+                title=f"✅ {option_to_watch.name} Added",
+                url=option_to_watch.product_url,
+                description=f"Started watching product",
                 color=0x00ff00
             )
         else:
             embed = discord.Embed(
-                title="⚠️ Already Watching",
-                description=f"This product is already being watched: {url}",
+                title=f"⚠️ {option_to_watch.name} Already Watching",
+                url=option_to_watch.product_url,
+                description=f"This product is already being watched",
                 color=0xffcc00
             )
     except Exception as e:

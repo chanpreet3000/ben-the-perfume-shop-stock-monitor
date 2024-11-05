@@ -46,7 +46,7 @@ async def watch_stock_cron(client: discord.Client):
                     await notify_users(
                         client,
                         embed,
-                        f'@here Product is now in stock!'
+                        f'@here [{option_to_watch.name}]({option_to_watch.product_url}) is now in stock!'
                     )
 
                     if db_manager.remove_watch_product(product_url):
