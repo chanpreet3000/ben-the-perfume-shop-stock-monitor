@@ -1,5 +1,6 @@
+import asyncio
 import random
-from urllib.parse import parse_qs, urlparse, urlunparse
+from urllib.parse import parse_qs, urlparse
 
 import discord
 import pytz
@@ -7,10 +8,14 @@ import aiohttp
 import json
 from datetime import datetime
 from typing import Tuple
+
+from DatabaseManager import DatabaseManager
 from Logger import Logger
 from bs4 import BeautifulSoup
 from models import ProductData, ProductOptions
 from ProxyManager import ProxyManager
+
+db = DatabaseManager()
 
 WINDOWS_USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -45,12 +50,6 @@ def get_current_time():
 def get_product_embed(product_data: ProductData) -> discord.Embed:
     embed = discord.Embed(title=product_data.name, url=product_data.product_url, color=0x00ff00)
 
-    embed.add_field(
-        name='Product EAN',
-        value=product_data.ean,
-        inline=False
-    )
-
     for option in product_data.options:
         embed.add_field(
             name='Variant',
@@ -66,6 +65,11 @@ def get_product_embed(product_data: ProductData) -> discord.Embed:
             name='Stock',
             value=f"{option.stock_level} - {option.stock_status}",
             inline=True
+        )
+        embed.add_field(
+            name='EAN',
+            value=option.ean,
+            inline=False
         )
         embed.add_field(
             name='\u200b',
@@ -123,71 +127,49 @@ async def fetch_product_data(url: str, max_retries=5) -> Tuple[discord.Embed, Pr
             parsed_url = urlparse(url)
             query_params = parse_qs(parsed_url.query)
             product_code = query_params.get('varSel')[0] if query_params.get('varSel') else None
-            base_url = urlunparse((
-                parsed_url.scheme,
-                parsed_url.netloc,
-                parsed_url.path,
-                '',
-                '',
-                ''
-            ))
-
-            if product_code:
-                Logger.info(f"Found product code: {product_code}")
-            else:
-                raise Exception("Product code not found")
 
             details = data[product_code]['details']['value']
             product_name = details['name']
-            ean = details['ean']
 
-            options = details['baseOptions'][0]['options']
-            selected = details['baseOptions'][0]['selected']
-
-            default_stock_level = selected['stock']['stockLevel']
-            default_stock_status = selected['stock']['stockLevelStatus']
-
-            default_formatted_price = selected['priceData']['formattedValue']
+            options = details['variantMatrix']
 
             # Process each option to extract variant information
             options_data = []
             for option in options:
+
                 try:
-                    variant_name = f"{product_name} - {option['variantOptionQualifiers'][0]['value']}"
+                    variant_name = f"{product_name} - {option['variantValueCategory']['name']}"
                 except (KeyError, IndexError):
                     variant_name = product_name
 
-                try:
-                    stock_level = option['stock']['stockLevel']
-                    stock_status = option['stock']['stockLevelStatus']
-                except KeyError:
-                    stock_level = default_stock_level
-                    stock_status = default_stock_status
-
-                try:
-                    formatted_price = option['priceData']['formattedValue']
-                except KeyError:
-                    formatted_price = default_formatted_price
+                variant_option = option['variantOption']
+                variant_code = variant_option['code']
+                variant_ean = variant_option['ean']
+                variant_stock_level = variant_option['stock']['stockLevel']
+                variant_stock_status = variant_option['stock']['stockLevelStatus']
+                variant_formatted_price = variant_option['priceData']['formattedValue']
+                variant_product_url = f"https://www.theperfumeshop.com/{variant_option['url']}?varSel={variant_code}"
 
                 options_data.append(
                     ProductOptions(
                         name=variant_name,
-                        stock_level=stock_level,
-                        is_in_stock=stock_status != 'outOfStock',
-                        stock_status=stock_status,
-                        product_code=option['code'],
-                        formatted_price=formatted_price,
-                        product_url=f"{base_url}?varSel={option['code']}"
+                        stock_level=variant_stock_level,
+                        is_in_stock=variant_stock_status != 'outOfStock',
+                        stock_status=variant_stock_status,
+                        product_code=variant_code,
+                        formatted_price=variant_formatted_price,
+                        product_url=variant_product_url,
+                        ean=variant_ean
                     )
                 )
 
             product_data = ProductData(
-                ean=ean,
                 name=product_name,
                 product_code=product_code,
                 options=options_data,
                 product_url=url
             )
+            db.add_or_update_proxy(random_proxy)
             Logger.info(f'Successfully fetched product data from {url}', product_data.to_dict())
             return get_product_embed(product_data), product_data
         except Exception as e:

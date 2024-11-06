@@ -66,8 +66,10 @@ class ProxyManager:
                                 break
 
                             for proxy in proxies_list:
-                                proxy_url = f"http://{proxy['username']}:{proxy['password']}@{proxy['proxy_address']}:{proxy['port']}"
-                                formatted_proxies.append({'http': proxy_url, 'https': proxy_url})
+                                if proxy['country_code'] != 'US':
+                                    proxy[
+                                        'http'] = f"http://{proxy['username']}:{proxy['password']}@{proxy['proxy_address']}:{proxy['port']}"
+                                    formatted_proxies.append(proxy)
 
                             if not proxies_data.get('next'):
                                 break

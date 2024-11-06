@@ -4,55 +4,38 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc962877-e348-4d32-bd9c-c380b4e594ca" name="Changes" comment="">
+    <list default="true" id="3a639096-ccc7-4079-b05a-98c52c783c8b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/superdrug-monitor.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discord_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/discord_bot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DatabaseManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProxyManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/ProxyManager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/watch_stock_cron.py" beforeDir="false" afterPath="$PROJECT_DIR$/watch_stock_cron.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="TypeScript File" />
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 3
+  &quot;associatedIndex&quot;: 2
 }</component>
-  <component name="ProjectId" id="2lkKtLBSheDsQHVaxbX8K5oExzh" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectId" id="2oRNNuzKVFjq1dszvJXVPuJIIq3" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Python.ProxyManager.executor": "Run",
-    "Python.check_stock.executor": "Run",
-    "Python.commands.executor": "Run",
-    "Python.db.executor": "Run",
-    "Python.discord_bot.executor": "Run",
-    "Python.logger.executor": "Run",
     "Python.main.executor": "Run",
-    "Python.temp.executor": "Run",
-    "Python.test.executor": "Run",
     "Python.utils.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/chanp/OneDrive/Desktop/Freelance/ben-the-perfume-shop-stock-monitor/main.py",
@@ -61,19 +44,12 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.Python",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\PyCharm 2024.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\chanp\OneDrive\Desktop\Freelance\superdrug-monitor" />
-    </key>
-  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="superdrug-monitor" />
+      <module name="ben-the-perfume-shop-stock-monitor" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -108,65 +84,22 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="cc962877-e348-4d32-bd9c-c380b4e594ca" name="Changes" comment="" />
-      <created>1725718848509</created>
+      <changelist id="3a639096-ccc7-4079-b05a-98c52c783c8b" name="Changes" comment="" />
+      <created>1730828391745</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1725718848509</updated>
-      <workItem from="1725718849796" duration="38000" />
-      <workItem from="1725718907313" duration="12087000" />
-      <workItem from="1725735362180" duration="5088000" />
-      <workItem from="1725740845816" duration="423000" />
-      <workItem from="1725781288193" duration="10221000" />
-      <workItem from="1725799433169" duration="14000" />
-      <workItem from="1725812939183" duration="1356000" />
-      <workItem from="1725816144679" duration="722000" />
-      <workItem from="1725818501531" duration="2334000" />
-      <workItem from="1725823226428" duration="2233000" />
-      <workItem from="1725859749413" duration="4423000" />
-      <workItem from="1725870172392" duration="5267000" />
-      <workItem from="1725969709992" duration="3187000" />
-      <workItem from="1725983967027" duration="1164000" />
-      <workItem from="1726063808841" duration="280000" />
-      <workItem from="1728369724251" duration="60000" />
-      <workItem from="1728451637585" duration="213000" />
-      <workItem from="1728561448631" duration="1416000" />
-      <workItem from="1729953177688" duration="4243000" />
-      <workItem from="1730016720914" duration="199000" />
-      <workItem from="1730406150251" duration="1492000" />
-      <workItem from="1730448909893" duration="637000" />
-      <workItem from="1730454955173" duration="1098000" />
-      <workItem from="1730464613675" duration="8102000" />
-      <workItem from="1730476373113" duration="1189000" />
-      <workItem from="1730482074588" duration="2000" />
-      <workItem from="1730628130708" duration="241000" />
-      <workItem from="1730628392223" duration="16258000" />
-      <workItem from="1730651442775" duration="190000" />
-      <workItem from="1730802884886" duration="3369000" />
-      <workItem from="1730806487010" duration="4135000" />
-      <workItem from="1730822925068" duration="4897000" />
+      <updated>1730828391745</updated>
+      <workItem from="1730828392763" duration="82000" />
+      <workItem from="1730828491910" duration="1555000" />
+      <workItem from="1730890411933" duration="2663000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$db.coverage" NAME="db Coverage Results" MODIFIED="1730629869999" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$ProxyManager.coverage" NAME="ProxyManager Coverage Results" MODIFIED="1730808379538" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/superdrug_monitor$commands.coverage" NAME="commands Coverage Results" MODIFIED="1725723761160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.venv/Lib/site-packages/discord/app_commands" />
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$main.coverage" NAME="main Coverage Results" MODIFIED="1730828124657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/superdrug_monitor$logger.coverage" NAME="logger Coverage Results" MODIFIED="1725728483477" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$test.coverage" NAME="test Coverage Results" MODIFIED="1730807566567" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$temp.coverage" NAME="temp Coverage Results" MODIFIED="1730827114464" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/superdrug_monitor$check_stock.coverage" NAME="check_stock Coverage Results" MODIFIED="1725728486557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/superdrug_monitor$main.coverage" NAME="main Coverage Results" MODIFIED="1730477517516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/superdrug_monitor$utils.coverage" NAME="utils Coverage Results" MODIFIED="1730406696562" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$utils.coverage" NAME="utils Coverage Results" MODIFIED="1730809102282" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$discord_bot.coverage" NAME="discord_bot Coverage Results" MODIFIED="1730827588537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/superdrug_monitor$temp.coverage" NAME="temp Coverage Results" MODIFIED="1730475305858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$utils.coverage" NAME="utils Coverage Results" MODIFIED="1730893517847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ben_the_perfume_shop_stock_monitor$main.coverage" NAME="main Coverage Results" MODIFIED="1730891487043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

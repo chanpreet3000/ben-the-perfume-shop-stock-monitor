@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.database import Database as MongoDatabase
@@ -37,6 +37,7 @@ class DatabaseManager:
         # Collection names
         self.notification_channels_collection = 'notification_channels'
         self.watch_products_collection = 'watch_products'
+        self.proxies_collection = 'proxies'
 
         # Connect to database
         self._connect()
@@ -65,6 +66,10 @@ class DatabaseManager:
             # Create unique index for product_url
             self.db[self.watch_products_collection].create_index(
                 "product_url", unique=True
+            )
+            # Create unique index for proxy http URL
+            self.db[self.proxies_collection].create_index(
+                "http", unique=True
             )
             Logger.info("Database indexes created successfully")
         except PyMongoError as e:
@@ -163,6 +168,51 @@ class DatabaseManager:
             return [channel["channel_id"] for channel in channels]
         except PyMongoError as e:
             Logger.error("Failed to fetch notification channels", e)
+            raise
+
+    def add_or_update_proxy(self, proxy_data: Dict) -> bool:
+        """Add a new proxy or update an existing proxy's success count and data"""
+        try:
+            if 'http' not in proxy_data:
+                Logger.error("Proxy data must contain 'http' URL")
+                return False
+
+            # Prepare update data
+            update_data = {
+                "$inc": {"success_count": 1},
+                "$setOnInsert": {
+                    "created_at": datetime.utcnow(),
+                },
+                "$set": {
+                    "updated_at": datetime.utcnow(),
+                    "id": proxy_data.get('id'),
+                    "username": proxy_data.get('username'),
+                    "password": proxy_data.get('password'),
+                    "proxy_address": proxy_data.get('proxy_address'),
+                    "port": proxy_data.get('port'),
+                    "valid": proxy_data.get('valid'),
+                    "last_verification": proxy_data.get('last_verification'),
+                    "country_code": proxy_data.get('country_code'),
+                    "city_name": proxy_data.get('city_name'),
+                    "asn_name": proxy_data.get('asn_name'),
+                    "asn_number": proxy_data.get('asn_number'),
+                    "high_country_confidence": proxy_data.get('high_country_confidence'),
+                    "http": proxy_data['http']
+                }
+            }
+
+            # Use upsert to either update existing proxy or insert new one
+            result = self.db[self.proxies_collection].update_one(
+                {"http": proxy_data['http']},
+                update_data,
+                upsert=True
+            )
+
+            Logger.info(f"Successfully {'updated' if result.matched_count else 'added'} proxy: {proxy_data['http']}")
+            return True
+
+        except PyMongoError as e:
+            Logger.error(f"Failed to add/update proxy: {proxy_data.get('http')}", e)
             raise
 
     def close(self):
